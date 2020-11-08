@@ -1,0 +1,30 @@
+﻿@page "/"
+
+<h3>Editor JS!</h3>
+<p>
+    Try out the Blazor implementation of EditorJS below.
+</p>
+<div style="border: 1px solid rgba(0,0,0,0.6)">
+    <EditorJS Config="@config" @ref="editor" @bind-ContentJson="@Content"></EditorJS>
+</div>
+
+<br />
+
+<h3>Editor data:</h3>
+<p>Below is the data coming from EditorJS component.</p>
+<textarea readonly style="width: 100%; min-height: 300px" @bind="Content"></textarea>
+
+@code {
+    EditorJsConfig config = new EditorJsConfig(plugins => plugins.All())
+    {
+        Placeholder = "Insert your content here"
+    };
+    EditorJS editor;
+
+    protected string Content { get; set; }
+
+    protected void ShowData()
+    {
+        Console.WriteLine(editor.ContentJson);
+    }
+}

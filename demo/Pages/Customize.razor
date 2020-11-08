@@ -1,0 +1,126 @@
+﻿@page "/customize"
+
+<h3>Customize</h3>
+
+<p>You can initialize editor with custom data. Reinitializing editor will not work as editorjs cannot be destroyed due to a bug.</p>
+
+<div class="row">
+    <div class="col-6">
+        <b>Plugins:</b>
+        <label style="margin-top: 10px">
+            <input type="checkbox" @bind="@Paragraph" />
+            Paragraph
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Header" />
+            Header
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Code" />
+            Code
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Checklist" />
+            Checklist
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Link" />
+            Link
+        </label>
+        <label>
+            <input type="checkbox" @bind="@List" />
+            List
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Marker" />
+            Marker
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Quote" />
+            Quote
+        </label>
+        <label>
+            <input type="checkbox" @bind="@Warning" />
+            Warning
+        </label>
+    </div>
+    <div class="col-6" style="display: flex; flex-direction: column">
+        <b>Initial value:</b>
+        <textarea style="margin-top: 10px; width: 100%; flex-grow: 1"></textarea>
+    </div>
+</div>
+
+<button disabled="@IsInitialized" style="margin-top: 10px" @onclick="@UpdateEditor">Update editor</button>
+
+<br />
+<br />
+
+<h3>Editor:</h3>
+<div style="border: 1px solid rgba(0,0,0,0.6)">
+    <EditorJS Config="@config" @ref="editor" AutoInitialize="false"></EditorJS>
+</div>
+
+@code {
+    protected bool Paragraph { get; set; } = true;
+    protected bool Header { get; set; } = true;
+    protected bool Code { get; set; } = true;
+    protected bool Checklist { get; set; } = true;
+    protected bool Link { get; set; } = true;
+    protected bool List { get; set; } = true;
+    protected bool Marker { get; set; } = true;
+    protected bool Quote { get; set; } = true;
+    protected bool Warning { get; set; } = true;
+
+    protected bool IsInitialized { get; set; } = false;
+    protected string InitialContent { get; set; } = @"
+{
+""time"": " + DateTime.Now.Ticks.ToString() + @", 
+""blocks"": [
+        {
+            ""type"":""header"",
+            ""data"": {
+                ""text"":""Hello"",""level"":2
+            }
+        },
+        {
+            ""type"":""paragraph"",
+            ""data"": {
+                ""text"":""This is custom content""
+            }
+        }
+    ],
+""version"":""2.19.0""
+}";
+
+    EditorJsConfig config = new EditorJsConfig(plugins => plugins.All())
+    {
+        Placeholder = "Insert your content here"
+    };
+    EditorJS editor;
+
+    protected async Task UpdateEditor()
+    {
+        config = new EditorJsConfig(builder =>
+        {
+            if (Paragraph) builder.Paragraph();
+            if (Header) builder.Header();
+            if (Code) builder.Code();
+            if (Checklist) builder.Checklist();
+            if (Link) builder.Link();
+            if (List) builder.List();
+            if (Marker) builder.Marker();
+            if (Quote) builder.Quote();
+            if (Warning) builder.Warning();
+
+            return builder;
+        });
+
+        config.Content = EditorJsContent.FromString(InitialContent);
+
+        Console.Write(config.Content.Blocks.Count);
+
+        await editor.UpdateEditor();
+
+        IsInitialized = true;
+    }
+}

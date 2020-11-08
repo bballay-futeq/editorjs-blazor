@@ -1,0 +1,60 @@
+﻿@using System.Threading.Tasks
+@using Microsoft.JSInterop
+@using Newtonsoft.Json
+
+@inherits EditorInteropComponent
+
+<div id="@ClientComponentID" @ref="@DomElement">
+</div>
+
+@code {
+    [Parameter]
+    public EditorJsConfig Config { get; set; }
+
+    [Parameter]
+    public EditorJsContent Content { get; set; }
+
+    [Parameter]
+    public bool AutoInitialize { get; set; } = true;
+
+    [Parameter]
+    public string ContentJson { get; set; }
+
+    [Parameter]
+    public EventCallback<EditorJsContent> ContentChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ContentJsonChanged { get; set; }
+
+    [Parameter]
+    public EventCallback ConfigChanged { get; set; }
+
+    public string EditorID => Guid.NewGuid().ToString();
+
+    [JSInvokable]
+    public async Task SetValue(string data)
+    {
+        this.Content = EditorJsContent.FromString(data);
+        this.ContentJson = JsonConvert.SerializeObject(data);
+
+        await ContentChanged.InvokeAsync(this.Content);
+        await ContentJsonChanged.InvokeAsync(this.ContentJson);
+
+        this.StateHasChanged();
+
+        await Task.CompletedTask;
+    }
+
+    protected override async Task InitializeClientComponent()
+    {
+        if (AutoInitialize)
+        {
+            await UpdateEditor();
+        }
+    }
+
+    public async Task UpdateEditor()
+    {
+        await JSRuntime.InvokeAsync<string>("editorJsHandler.initializeEditor", new object[] { ClientComponentID, DomElement, DotNetObjectReference.Create(this) });
+    }
+}

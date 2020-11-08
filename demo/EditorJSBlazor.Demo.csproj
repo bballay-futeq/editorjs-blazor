@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\EditorJS.Blazor</DockerfileContext>
+    <RootNamespace>EditorJSBlazor.Demo</RootNamespace>
+    <AssemblyName>EditorJSBlazor.Demo</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\EditorJSBlazor.csproj" />
+  </ItemGroup>
+
+</Project>
