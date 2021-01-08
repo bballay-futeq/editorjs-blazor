@@ -4,7 +4,9 @@
   "description": "Blazor wrapper for EditorJS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "set NODE_ENV=development&& webpack --config ./webpack.config.js --mode development --progress",
+    "build:prod": "set NODE_ENV=production&& webpack --config ./webpack.config.js --mode production --progress"
   },
   "author": "",
   "license": "ISC",

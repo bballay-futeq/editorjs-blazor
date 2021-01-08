@@ -117,8 +117,6 @@
 
         config.Content = EditorJsContent.FromString(InitialContent);
 
-        Console.Write(config.Content.Blocks.Count);
-
         await editor.UpdateEditor();
 
         IsInitialized = true;

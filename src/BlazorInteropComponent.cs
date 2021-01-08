@@ -8,10 +8,19 @@ using System.Threading.Tasks;
 
 namespace EditorJSBlazor
 {
-    public class EditorInteropComponent : ComponentBase
+    /// <summary>
+    /// Base class for components that have JS client component.
+    /// </summary>
+    public class BlazorInteropComponent : ComponentBase
     {
+        /// <summary>
+        /// Element that will be passed to client JS component. 
+        /// </summary>
         protected ElementReference DomElement { get; set; }
 
+        /// <summary>
+        /// ID of the client component.
+        /// </summary>
         protected Guid ClientComponentID { get; set; } = Guid.NewGuid();
 
         [Inject]
@@ -27,11 +36,20 @@ namespace EditorJSBlazor
             await base.OnAfterRenderAsync(firstRender);
         }
 
+        /// <summary>
+        /// Initialize the client JS component.
+        /// </summary>
+        /// <returns></returns>
         protected virtual Task InitializeClientComponent()
         {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Calls the JS object method.
+        /// </summary>
+        /// <param name="methodName">Name of the JS method.</param>
+        /// <param name="args">Argumets to pass to the method</param>
         protected async Task CallClientMethod(string methodName, params object[] args)
         {
             var allParams = new object[] { ClientComponentID, methodName }.ToList();
@@ -41,6 +59,11 @@ namespace EditorJSBlazor
             await JSRuntime.InvokeAsync<string>($"editorJsHandler.callEditorMethod", allParams.ToArray());
         }
 
+        /// <summary>
+        /// Method invoked from JS that retrieves Blazor component property value.
+        /// </summary>
+        /// <param name="propertyName">Name of the property to retrieve</param>
+        /// <returns>Vale of the property</returns>
         [JSInvokable]
         public Task<object> GetBlazorProperty(string propertyName)
         {

@@ -2,35 +2,63 @@
 @using Microsoft.JSInterop
 @using Newtonsoft.Json
 
-@inherits EditorInteropComponent
+@inherits BlazorInteropComponent
 
 <div id="@ClientComponentID" @ref="@DomElement">
 </div>
 
 @code {
+    /// <summary>
+    /// Coniguration for current editor.
+    /// </summary>
     [Parameter]
     public EditorJsConfig Config { get; set; }
 
+    /// <summary>
+    /// Content of the editor.
+    /// </summary>
     [Parameter]
     public EditorJsContent Content { get; set; }
 
+    /// <summary>
+    /// Determines whether editor should initialize on load.
+    /// </summary>
     [Parameter]
     public bool AutoInitialize { get; set; } = true;
 
+    /// <summary>
+    /// Content of the editor in Json representation.
+    /// </summary>
     [Parameter]
     public string ContentJson { get; set; }
 
+    /// <summary>
+    /// Event that occurs everytime that editor's content changes.
+    /// </summary>
     [Parameter]
     public EventCallback<EditorJsContent> ContentChanged { get; set; }
 
+    /// <summary>
+    /// Same as <see cref="ContentChanged"/> but returning a json representation of the content.
+    /// </summary>
     [Parameter]
     public EventCallback<string> ContentJsonChanged { get; set; }
 
+    /// <summary>
+    /// Event that occurs when editor's config changes.
+    /// </summary>
     [Parameter]
     public EventCallback ConfigChanged { get; set; }
 
+    /// <summary>
+    /// ID of current editor.
+    /// </summary>
     public string EditorID => Guid.NewGuid().ToString();
 
+    /// <summary>
+    /// Sets the editors value via JS interop.
+    /// </summary>
+    /// <param name="data">Data coming from EditorJS</param>
     [JSInvokable]
     public async Task SetValue(string data)
     {
@@ -45,6 +73,10 @@
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Initializes EditorJS component.
+    /// </summary>
+    /// <returns></returns>
     protected override async Task InitializeClientComponent()
     {
         if (AutoInitialize)
@@ -53,6 +85,10 @@
         }
     }
 
+    /// <summary>
+    /// Updates the editor client component.
+    /// </summary>
+    /// <returns></returns>
     public async Task UpdateEditor()
     {
         await JSRuntime.InvokeAsync<string>("editorJsHandler.initializeEditor", new object[] { ClientComponentID, DomElement, DotNetObjectReference.Create(this) });
